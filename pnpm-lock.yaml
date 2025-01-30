@@ -11,6 +11,9 @@ dependencies:
   '@nuxtjs/tailwindcss':
     specifier: 6.13.1
     version: 6.13.1
+  '@vueuse/core':
+    specifier: ^12.5.0
+    version: 12.5.0(typescript@5.7.3)
   class-variance-authority:
     specifier: ^0.7.1
     version: 0.7.1
@@ -2094,8 +2097,23 @@ packages:
       - vue
     dev: false
 
+  /@vueuse/core@12.5.0(typescript@5.7.3):
+    resolution: {integrity: sha512-GVyH1iYqNANwcahAx8JBm6awaNgvR/SwZ1fjr10b8l1HIgDp82ngNbfzJUgOgWEoxjL+URAggnlilAEXwCOZtg==}
+    dependencies:
+      '@types/web-bluetooth': 0.0.20
+      '@vueuse/metadata': 12.5.0
+      '@vueuse/shared': 12.5.0(typescript@5.7.3)
+      vue: 3.5.13(typescript@5.7.3)
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
   /@vueuse/metadata@10.11.1:
     resolution: {integrity: sha512-IGa5FXd003Ug1qAZmyE8wF3sJ81xGLSqTqtQ6jaVfkeZ4i5kS2mwQF61yhVqojRnenVew5PldLyRgvdl4YYuSw==}
+    dev: false
+
+  /@vueuse/metadata@12.5.0:
+    resolution: {integrity: sha512-Ui7Lo2a7AxrMAXRF+fAp9QsXuwTeeZ8fIB9wsLHqzq9MQk+2gMYE2IGJW48VMJ8ecvCB3z3GsGLKLbSasQ5Qlg==}
     dev: false
 
   /@vueuse/shared@10.11.1(vue@3.5.13):
@@ -2105,6 +2123,14 @@ packages:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
+    dev: false
+
+  /@vueuse/shared@12.5.0(typescript@5.7.3):
+    resolution: {integrity: sha512-vMpcL1lStUU6O+kdj6YdHDixh0odjPAUM15uJ9f7MY781jcYkIwFA4iv2EfoIPO6vBmvutI1HxxAwmf0cx5ISQ==}
+    dependencies:
+      vue: 3.5.13(typescript@5.7.3)
+    transitivePeerDependencies:
+      - typescript
     dev: false
 
   /abbrev@3.0.0:
