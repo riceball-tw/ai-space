@@ -46,21 +46,21 @@
 
   type SignIn = z.infer<typeof signInSchema>
 
-  const supabase = useSupabaseClient()
-
-  // TODO: Add backend to better validate user input before send to database
   async function handleSignIn(signinValue: SignIn) {
     const { password, email } = signinValue
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
 
-    if (signInError) {
-      console.error(signInError)
-      return
+    try {
+      await $fetch('/api/auth/sign-in', {
+        method: 'POST',
+        body: {
+          email,
+          password,
+        } as SignIn
+      })
+      navigateTo('/chat')
+    } catch(err) {
+      alert(err)
     }
     
-    navigateTo('/chat')
   }
 </script>

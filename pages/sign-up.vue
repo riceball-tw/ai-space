@@ -47,29 +47,22 @@
   import { signUpFieldConfig, signUpSchema } from '@/utils/schemas/sign-up'
 
   type SignUp = z.infer<typeof signUpSchema>
-  type SignUpUserMetaData = Omit<SignUp, 'email' | 'password'>
-  
-  const supabase = useSupabaseClient()
 
   async function handleSignUp(signupValue: SignUp) {
     const { password, email, username } = signupValue
     
-    // TODO: Add backend to better validate user input before send to database
-    const { error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
+    try {
+      await $fetch('/api/auth/sign-up', {
+        method: 'POST',
+        body: {
+          password,
+          email,
           username
-        } as SignUpUserMetaData
-      }
-    })
-  
-    if (signupError) {
-      console.error(signupError)
-      return
-    } 
-
-    navigateTo('/chat')
+        } as SignUp
+      })
+      navigateTo('/chat')
+    } catch(err) {
+      alert(err)
+    }
   }
 </script>
