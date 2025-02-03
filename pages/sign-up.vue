@@ -29,9 +29,9 @@
 
         <div class="mt-4 text-center text-sm">
           Have an account?
-          <a href="/sign-in" class="underline">
+          <NuxtLink to="/sign-in" class="underline">
             Sign In
-          </a>
+          </NuxtLink>
         </div>
       </div>
     </div>
