@@ -16,12 +16,19 @@ export const signUpFieldConfig = {
 }
 
 export const signUpSchema = z.object({
-  username: z.string({
+  username: 
+    z.string({
       required_error: 'Username is required.',
-    }),
-  email: z.string({
+    })
+    .trim()
+    .min(1, { message: 'Username is required' })
+    .max(20, { message: 'Username is longer than 20 characters'})
+    ,
+  email: 
+    z.string({
       required_error: 'Email is required.',
-    }),
+    })
+    .email({ message: 'Invalid Email format'}),
   password: z
     .string({
       required_error: 'Password is required.',
