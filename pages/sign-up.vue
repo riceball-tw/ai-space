@@ -17,8 +17,13 @@
         :schema="signUpSchema"
         @submit="handleSignUp"
         >
-          <Button type="submit" class="w-full">
-            Create account
+          <Button :disabled="signUpStatus === 'loading'" type="submit" class="w-full">
+            <!-- Loading state -->
+            <div class="inline-flex items-center" v-if="signUpStatus === 'loading'">
+              <Loader2 class="w-4 h-4 mr-2 animate-spin" className="animate-spin" />Loading...
+            </div>
+            <!-- Other state -->
+            <div v-else>Create Account</div>
           </Button>
         </AutoForm>
 
@@ -44,14 +49,18 @@
 
 <script setup lang="ts">
   import * as z from 'zod'
+  import { Loader2 } from 'lucide-vue-next'
   import { signUpFieldConfig, signUpSchema } from '@/utils/schemas/sign-up'
 
   type SignUp = z.infer<typeof signUpSchema>
+
+  const signUpStatus = ref<'loading' | 'idle'>('idle')
 
   async function handleSignUp(signupValue: SignUp) {
     const { password, email, username } = signupValue
     
     try {
+      signUpStatus.value = 'loading'
       await $fetch('/api/auth/sign-up', {
         method: 'POST',
         body: {
@@ -63,6 +72,8 @@
       navigateTo('/chat')
     } catch(err) {
       alert(err)
+    } finally {
+      signUpStatus.value = 'idle'
     }
   }
 </script>

@@ -16,8 +16,13 @@
         :schema="signInSchema"
         @submit="handleSignIn"
         >
-          <Button type="submit" class="w-full">
-            Sign in
+          <Button :disabled="signInStatus === 'loading'" type="submit" class="w-full">
+            <!-- Loading state -->
+            <div class="inline-flex items-center" v-if="signInStatus === 'loading'">
+              <Loader2 class="w-4 h-4 mr-2 animate-spin" className="animate-spin" />Loading...
+            </div>
+            <!-- Other state -->
+            <div v-else>Sign in</div>
           </Button>
         </AutoForm>
         <div class="mt-4 text-center text-sm">
@@ -42,14 +47,18 @@
 
 <script setup lang="ts">
   import * as z from 'zod'
+  import { Loader2 } from 'lucide-vue-next'
   import { signInFieldConfig, signInSchema } from '@/utils/schemas/sign-in'
-
+  
   type SignIn = z.infer<typeof signInSchema>
+
+  const signInStatus = ref<'loading' | 'idle'>('idle')
 
   async function handleSignIn(signinValue: SignIn) {
     const { password, email } = signinValue
 
     try {
+      signInStatus.value = 'loading'
       await $fetch('/api/auth/sign-in', {
         method: 'POST',
         body: {
@@ -60,6 +69,8 @@
       navigateTo('/chat')
     } catch(err) {
       alert(err)
+    } finally {
+      signInStatus.value = 'idle'
     }
     
   }
