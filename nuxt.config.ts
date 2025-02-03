@@ -8,8 +8,16 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    '@nuxtjs/supabase'
   ],
+  supabase: {
+    redirectOptions: {
+      login: '/sign-in',
+      callback: '/confirm',
+      include: ['/chat(/*)?', '/profile(/*)?']
+    }
+  },
   shadcn: {
     /**
      * Prefix for all the imported component
