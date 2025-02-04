@@ -47,6 +47,7 @@
 
 <script setup lang="ts">
   import * as z from 'zod'
+  import { toast } from 'vue-sonner'
   import { Loader2 } from 'lucide-vue-next'
   import { signInFieldConfig, signInSchema } from '@/utils/schemas/sign-in'
   
@@ -59,16 +60,19 @@
 
     try {
       signInStatus.value = 'loading'
-      await $fetch('/api/auth/sign-in', {
+      const signInRes = await $fetch('/api/auth/sign-in', {
         method: 'POST',
         body: {
           email,
           password,
         } as SignIn
       })
+      toast.success(signInRes.message)
       navigateTo('/chat')
     } catch(err) {
-      alert(err)
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
     } finally {
       signInStatus.value = 'idle'
     }

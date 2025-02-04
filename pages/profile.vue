@@ -56,9 +56,9 @@
 
 <script setup lang="ts">
   import * as z from 'zod'
+  import { toast } from 'vue-sonner'
   import { Loader2 } from 'lucide-vue-next'
   import { userProfileFieldConfig, userProfileSchema } from '@/utils/schemas/profile'
-
   definePageMeta({
     layout: 'basic'
   })
@@ -78,9 +78,11 @@
           username,
         } as UserProfile
       })
-      alert(profileRes.message)
+      toast.success(profileRes.message)
     } catch(err) {
-      alert(err)
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
     } finally {
       profileStatus.value = 'idle'
     }
