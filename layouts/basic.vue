@@ -1,14 +1,8 @@
 <template>
-  <div>
+  <NuxtLayout name="default">
     <AppNavbar class="h-20" />
     <div class="mt-20">
       <slot />
     </div>
-  </div>
+  </NuxtLayout>
 </template>
-
-<script setup lang="ts">
-  definePageMeta({
-    layout: 'default'
-  })
-</script>
