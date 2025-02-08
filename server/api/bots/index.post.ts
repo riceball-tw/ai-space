@@ -5,7 +5,6 @@ export default defineEventHandler(async () => {
   return (Array.from({ length: 3 }, () => ({
     id: faker.string.uuid(),
     name: faker.person.fullName(),
-    email: faker.internet.email(),
     image: {
       avatar: {
         src: faker.image.urlPicsumPhotos({

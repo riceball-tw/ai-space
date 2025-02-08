@@ -1,7 +1,6 @@
 export interface Bot {
   id: string,
   name: string,
-  email: string,
   image: {
     avatar: {
       src: string,
