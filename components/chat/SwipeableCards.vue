@@ -72,9 +72,7 @@
 
   const containerRef = ref(null)
   const swiper = useSwiper(containerRef)
-  const { data: bots, status: botsStatus, execute: botsExecute } = useLazyFetch('/api/bots', {
-    method: 'POST'
-  })
+  const { data: bots, status: botsStatus, execute: botsExecute } = useLazyFetch('/api/bots/random')
   const totalBots = ref<Bots | null>(bots.value)
   const hasSwiperInited = ref(false)
 
