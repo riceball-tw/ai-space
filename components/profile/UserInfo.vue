@@ -49,7 +49,7 @@
         method: 'POST',
         body: {
           username,
-        } as UserProfile
+        } satisfies UserProfile
       })
       toast.success(profileRes.message)
     } catch(err) {

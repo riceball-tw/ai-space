@@ -68,7 +68,7 @@
           password,
           email,
           username
-        } as SignUp
+        } satisfies SignUp
       })
       toast.success(signUpRes.message)
       navigateTo('/chat')

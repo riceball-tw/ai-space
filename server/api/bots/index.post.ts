@@ -25,5 +25,5 @@ export default defineEventHandler(async () => {
       }
     },
     bio: faker.person.bio(),
-  }))) as Bots
+  }))) satisfies Bots;
 });

@@ -65,7 +65,7 @@
         body: {
           email,
           password,
-        } as SignIn
+        } satisfies SignIn
       })
       toast.success(signInRes.message)
       navigateTo('/chat')

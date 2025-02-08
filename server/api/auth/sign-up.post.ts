@@ -20,8 +20,8 @@ export default defineEventHandler(async (event) => {
     password,
     options: {
       data: {
-        username
-      } as SignUpUserMetaData
+        username,
+      } satisfies SignUpUserMetaData
     }
   });
   if (error) {
