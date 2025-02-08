@@ -12,6 +12,9 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     'nuxt-swiper'
   ],
+  runtimeConfig: {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY
+  },
   supabase: {
     redirectOptions: {
       login: '/sign-in',
