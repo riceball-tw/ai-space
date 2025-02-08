@@ -7,7 +7,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate-db-type": "pnpm supabase gen types typescript > utils/type/database.types.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -23,6 +24,7 @@
     "nuxt-swiper": "2.0.0",
     "radix-vue": "^1.9.13",
     "shadcn-nuxt": "0.11.3",
+    "supabase": "^2.9.6",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul-vue": "^0.2.1",
