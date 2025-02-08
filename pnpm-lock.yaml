@@ -32,6 +32,9 @@ dependencies:
   nuxt:
     specifier: ^3.15.2
     version: 3.15.4(typescript@5.7.3)(vite@6.0.11)
+  nuxt-swiper:
+    specifier: 2.0.0
+    version: 2.0.0
   radix-vue:
     specifier: ^1.9.13
     version: 1.9.13(vue@3.5.13)
@@ -44,6 +47,9 @@ dependencies:
   tailwindcss-animate:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.4.17)
+  vaul-vue:
+    specifier: ^0.2.1
+    version: 0.2.1(radix-vue@1.9.13)(vue@3.5.13)
   vee-validate:
     specifier: ^4.15.0
     version: 4.15.0(vue@3.5.13)
@@ -4438,6 +4444,17 @@ packages:
       boolbase: 1.0.0
     dev: false
 
+  /nuxt-swiper@2.0.0:
+    resolution: {integrity: sha512-9NJ7ipoo3sBqFOtnYccVjVPuywGqY1vA82R2YinHo/U4Mw8c0Uy/Q+ep7qihLWr/3wZq9BqFOKPuWKw5xKl77Q==}
+    dependencies:
+      '@nuxt/kit': 3.15.4(magicast@0.3.5)
+      swiper: 11.2.2
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+    dev: false
+
   /nuxt@3.15.4(typescript@5.7.3)(vite@6.0.11):
     resolution: {integrity: sha512-hSbZO4mR0uAMJtZPNTnCfiAtgleoOu28gvJcBNU7KQHgWnNXPjlWgwMczko2O4Tmnv9zIe/CQged+2HsPwl2ZA==}
     engines: {node: ^18.20.5 || ^20.9.0 || >=22.0.0}
@@ -5789,6 +5806,11 @@ packages:
       picocolors: 1.1.1
     dev: false
 
+  /swiper@11.2.2:
+    resolution: {integrity: sha512-FmAN6zACpVUbd/1prO9xQ9gKo9cc6RE2UKU/z4oXtS8fNyX4sdOW/HHT/e444WucLJs0jeMId6WjdWM2Lrs8zA==}
+    engines: {node: '>= 4.7.0'}
+    dev: false
+
   /system-architecture@0.1.0:
     resolution: {integrity: sha512-ulAk51I9UVUyJgxlv9M6lFot2WP3e7t8Kz9+IS6D4rVba1tR9kON+Ey69f+1R4Q8cd45Lod6a4IcJIxnzGc/zA==}
     engines: {node: '>=18'}
@@ -6275,6 +6297,19 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /vaul-vue@0.2.1(radix-vue@1.9.13)(vue@3.5.13):
+    resolution: {integrity: sha512-iF91R1JQZzxb9mb9uGNHYv8rVFxR5bL5Fj51iqvyXjzMPAzNMciCrXb9OUBu2NdlhcF6rVtEADXnQoTY+pKIeA==}
+    peerDependencies:
+      radix-vue: ^1.4.0
+      vue: ^3.3.0
+    dependencies:
+      '@vueuse/core': 10.11.1(vue@3.5.13)
+      radix-vue: 1.9.13(vue@3.5.13)
+      vue: 3.5.13(typescript@5.7.3)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
     dev: false
 
   /vee-validate@4.15.0(vue@3.5.13):

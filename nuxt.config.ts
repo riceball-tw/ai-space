@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     '@nuxtjs/color-mode',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    'nuxt-swiper'
   ],
   supabase: {
     redirectOptions: {
