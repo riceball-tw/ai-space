@@ -4,8 +4,7 @@
       <AvatarImage :src="avatar.src" :alt="avatar.alt" />
       <AvatarFallback>{{ avatar.alt }}</AvatarFallback>
     </Avatar>
-
-    <ChatBubble time="12:00">
+    <ChatBubble :time="time">
       <slot />
     </ChatBubble>
   </div>
@@ -20,6 +19,7 @@
       alt: string;
     };
     direction?: 'left' | 'right';
+    time?: string
   }>()
 
 </script>
