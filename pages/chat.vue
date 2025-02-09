@@ -35,7 +35,7 @@
               <li v-for="{ id, name, image, bio } in likedBots" :key="id">
                 <button type="button" :class="`text-left p-4 border rounded w-full flex items-center gap-2 hover:bg-muted ${activeBotId === id ? 'bg-muted' : ''}`" @click="() => {
                   activeBotId = id;
-                  handleFirstTimeChat(id)
+                  handleStartChat(id)
                 }">
                   <Avatar>
                     <AvatarImage :src="image.avatar.src" :alt="`${name}'s avatar`" />
@@ -65,8 +65,6 @@
       
       <!-- Chats -->
       <div class="border p-4 rounded w-full">
-        <!-- <div v-if="activeBot"> -->
-        
         <div v-if="allHistoryChatsStatus !== 'success'">
           Loading chat history...
         </div>
@@ -170,8 +168,12 @@
       historyChats.value = Array.isArray(allHistoryChatsCloudData.value) ? allHistoryChatsCloudData.value : []
   }, { once: true })
 
-  const historyChats = ref(Array.isArray(allHistoryChatsCloudData.value) ? allHistoryChatsCloudData.value : [])
   const likedBots = ref(Array.isArray(likedBotsCloudData.value) ? likedBotsCloudData.value : []) 
+  const historyChats = ref(Array.isArray(allHistoryChatsCloudData.value) ? allHistoryChatsCloudData.value : [])
+  const isShowSwipeableCards = ref(false)
+  const isBotLoading = ref(false)
+  const isSendingMessage = ref(false)
+  // --- Active ---
   const activeBotId = ref<string | null>(null)
   const activeBot = computed(() => likedBots.value.find((bot) => bot.id === activeBotId.value))
   const activeHistoryChats = computed(() => 
@@ -179,36 +181,45 @@
       .filter(chat => chat.bot_id === activeBotId.value)
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
   )
-  const isShowSwipeableCards = ref(false)
-  const isBotLoading = ref(false)
-  const isSendingMessage = ref(false)
 
-  async function handleLike(e: Bot) {
-    const isPersonAlreadyLiked = likedBots.value.some((bot) => bot.id === e.id)
+  /**
+   * Add target bot to like
+   */
+  async function handleLike(targetBot: Bot) {
+    const isPersonAlreadyLiked = likedBots.value.some((bot) => bot.id === targetBot.id)
     if (isPersonAlreadyLiked) return
 
     try {
       await $fetch('/api/bots/', {
         method: 'POST',
-        body: e,
+        body: targetBot,
       })
-      likedBots.value = [...likedBots.value, e]
+      likedBots.value = [...likedBots.value, targetBot]
     } catch (err) {
       console.error(err);
     }
   }
 
-  function handleDislike(e: Bot) {
-    likedBots.value = likedBots.value.filter((bot) => bot.id !== e.id)
+  /**
+   * Remove target bot from like
+   */
+  function handleDislike(targetBot: Bot) {
+    likedBots.value = likedBots.value.filter((bot) => bot.id !== targetBot.id)
   }
 
+  /**
+   * Add new chat history
+   */
   async function updateChatHistory(chatHistoryRequestBody: ChatHistoryRequestBody) {
     return await $fetch<ChatHistory>('/api/chat/history', {
       method: 'POST',
-      body: chatHistoryRequestBody
+      body: chatHistoryRequestBody satisfies ChatHistoryRequestBody
     })
   }
 
+  /**
+   * Get Bot reply
+   */
   async function botReply({bot, history}: botChatSchema) {
     return await $fetch<GenerateContentResult>('/api/chat/reply', {
       method: 'POST',
@@ -222,8 +233,11 @@
     })
   }
 
-  const { handleSubmit, resetForm } = useForm({validationSchema: toTypedSchema(sendChatSchema)})
-  const handleSendChat = handleSubmit(async ({ message }) => {
+  /**
+   * Send Chat
+   */
+  const { handleSubmit: sendChatHandleSubmit, resetForm: sendChatResetForm } = useForm({validationSchema: toTypedSchema(sendChatSchema)})
+  const handleSendChat = sendChatHandleSubmit(async ({ message }) => {
     if (isSendingMessage.value) return
     try {
       isSendingMessage.value = true
@@ -235,21 +249,17 @@
         botId: activeBotId.value
       })
       historyChats.value = [...historyChats.value, newChat]
-      resetForm()
+      sendChatResetForm()
       const reply = await botReply({bot: activeBot.value, history: activeHistoryChats.value})
-
       const candidates = reply.response.candidates
       if (!candidates) return
       const initContent = candidates[0].content
-
       const newBotReply = await updateChatHistory({
         botId: activeBotId.value, 
         content: initContent.parts[0].text || '', 
         role: initContent.role
       })
       historyChats.value = [...historyChats.value, newBotReply]
-
-
     } catch(err) {
       console.error(err)
     } finally {
@@ -257,22 +267,22 @@
     }
   })
 
-  async function handleFirstTimeChat(botId: string) {
-    if (allHistoryChats.value && Array.isArray(allHistoryChats.value)) {
-      const isBotChatted = historyChats.value.some(chat => chat.bot_id === botId)
+  /**
+   * First time chat will fire a bot reply and update chat history as start
+   */
+  async function handleStartChat(targetBotId: string) {
+    if (allHistoryChatsCloudData.value && Array.isArray(allHistoryChatsCloudData.value)) {
+      const isBotChatted = historyChats.value.some(chat => chat.bot_id === targetBotId)
       if (!isBotChatted && !isBotLoading.value) {
         try {
           isBotLoading.value = true
-
           if (!activeBot.value) return;
-
           const reply = await botReply({ bot: activeBot.value })
           const candidates = reply.response.candidates
           if (!candidates) return
           const initContent = candidates[0].content
-
           const newChat = await updateChatHistory({
-            botId, 
+            botId: targetBotId, 
             content: initContent.parts[0].text || '', 
             role: initContent.role
           })
