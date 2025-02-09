@@ -27,23 +27,33 @@
         <h1 class="text-2xl font-bold">Liked List ({{ likedBots.length }})</h1>
         <ScrollArea style="--max-height-liked-list: 600px;" class="flex flex-col gap-4 w-full max-h-[--max-height-liked-list] before:content-[''] before:w-full">
           <ul class="flex flex-col flex-wrap gap-2">
-            <li v-if="likedBots.length === 0" class="text-center flex gap-2 items-center flex-col p-8 border rounded">
-              <Meh :size="32" />
-              No likes yet.
-            </li>
-            <li v-for="{ id, name, image, bio } in likedBots" :key="id">
-              <button type="button" :class="`text-left p-4 border rounded w-full flex items-center gap-2 hover:bg-muted ${activeBotId === id ? 'bg-muted' : ''}`" @click="activeBotId = id">
-                <Avatar>
-                  <AvatarImage :src="image.avatar.src" :alt="`${name}'s avatar`" />
-                  <AvatarFallback>{{ `${name}'s avatar` }}</AvatarFallback>
-                </Avatar>
-         
-                <div>
-                  <h2 class="text-lg font-medium">{{ name }}</h2>
-                  <p class="text-sm line-clamp-1">{{ bio }}</p>
-                </div>
-              </button>
-            </li>
+            <template v-if="relatedBotsStatus === 'success'">
+              <li v-if="likedBots.length === 0" class="text-center flex gap-2 items-center flex-col p-8 border rounded">
+                <Meh :size="32" />
+                No likes yet.
+              </li>
+              <li v-for="{ id, name, image, bio } in likedBots" :key="id">
+                <button type="button" :class="`text-left p-4 border rounded w-full flex items-center gap-2 hover:bg-muted ${activeBotId === id ? 'bg-muted' : ''}`" @click="() => {
+                  activeBotId = id;
+                  handleFirstTimeChat(id)
+                }">
+                  <Avatar>
+                    <AvatarImage :src="image.avatar.src" :alt="`${name}'s avatar`" />
+                    <AvatarFallback>{{ `${name}'s avatar` }}</AvatarFallback>
+                  </Avatar>
+          
+                  <div>
+                    <h2 class="text-lg font-medium">{{ name }}</h2>
+                    <p class="text-sm line-clamp-1">{{ bio }}</p>
+                  </div>
+                </button>
+              </li>
+            </template>
+            <template v-if="relatedBotsStatus === 'pending'">
+              <li v-for="i in 10" :key="i">
+                <Skeleton style="height: 80px" class="p-4 border rounded w-full" />
+              </li>
+            </template>
           </ul>
         </ScrollArea>
         <!-- Find more AI friends -->
@@ -72,20 +82,30 @@
   
           <!-- Chat Content -->
           <div class="flex flex-col gap-4 h-full">
-            <Chat :avatar="{
-              src: 'https://github.com/shadcn.png',
-              alt: 'User avatar'
-            }">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi fugit quisquam unde eius veritatis suscipit natus debitis rerum vel aliquid soluta, eos iste quaerat accusamus voluptatem maxime incidunt iusto? Iste.  
+            <Chat 
+            :avatar="{
+              src: activeBot.image.avatar.src,
+              alt: `${activeBot.name}'s avatar`
+            }"  v-if="isBotLoading">
+            Typing...
+          </Chat>
+            
+            <!-- Why Add Z? -->
+            <!-- Convert UTC date time to local date time - stack overflow -->
+            <!-- https://stackoverflow.com/a/48822115/14927277 -->
+            <Chat v-for="chat in activeHistoryChats" 
+            :avatar="chat.role === 'user' ? {
+              src: '',
+              alt: 'Me',
+            } : {
+              src: activeBot.image.avatar.src,
+              alt: `${activeBot.name}'s avatar`
+            }" 
+            :time="new Date(chat.created_at + 'Z').toLocaleTimeString()"
+            :direction="chat.role === 'user' ? 'right' : 'left'"
+            >
+              {{ chat.content }} 
             </Chat>
-
-            <Chat class="self-end" :avatar="{
-              src: 'https://github.com/shadcn.png',
-              alt: 'User avatar'
-            }">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi fugit quisquam unde eius veritatis suscipit natus debitis rerum vel aliquid soluta, eos iste quaerat accusamus voluptatem maxime incidunt iusto? Iste.  
-            </Chat>
-
           </div>
 
           <!-- Chat Footer -->
@@ -108,7 +128,6 @@
           <p class="flex flex-col items-center gap-2"><ScanFace :size="64" />Select a friend to chat</p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -117,33 +136,143 @@
   definePageMeta({
     layout: 'basic',
   })
+  import * as z from 'zod'
   import { useForm } from 'vee-validate'
   import { toTypedSchema } from '@vee-validate/zod'
   import type { Bots, Bot } from '@/utils/type/bots'
+  import type { ChatHistory } from '@/utils/type/chat-history'
+  import { chatHistoryBodySchema } from '@/utils/schemas/chat-history'
+  import { botChatSchema } from '@/utils/schemas/bot'
   import SwipeableCards from '@/components/chat/SwipeableCards.vue'
   import Chat from '@/components/chat/Chat.vue'
   import { UserRoundPlus, Meh, Info, Send, ScanFace } from 'lucide-vue-next';
   import { sendChatSchema } from '@/utils/schemas/send-chat'
+  import type { GenerateContentResult } from '@google/generative-ai'
+
+  type ChatHistoryRequestBody = z.infer<typeof chatHistoryBodySchema>
+  type botChatSchema = z.infer<typeof botChatSchema>
+
+  const { data: relatedBotsData, status: relatedBotsStatus } = await useLazyFetch<Bots>('/api/bots')
+  const { data: allHistoryChats } = useLazyFetch('/api/chat')
+
+  const historyChats = ref(Array.isArray(allHistoryChats.value) ? allHistoryChats.value : [])
   
-  const likedBots = ref<Bots>([])
+  
+  const likedBots = ref(Array.isArray(relatedBotsData.value) ? relatedBotsData.value : [])
   const activeBotId = ref<string | null>(null)
   const activeBot = computed(() => likedBots.value.find((bot) => bot.id === activeBotId.value))
+  const activeHistoryChats = computed(() => 
+    historyChats.value
+      .filter(chat => chat.bot_id === activeBotId.value)
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  )
   const isShowSwipeableCards = ref(false)
+  const isBotLoading = ref(false)
+  const isSendingMessage = ref(false)
 
-  function handleLike(e: Bot) {
+  async function handleLike(e: Bot) {
     const isPersonAlreadyLiked = likedBots.value.some((bot) => bot.id === e.id)
     if (isPersonAlreadyLiked) return
-    likedBots.value = [...likedBots.value, e]
+
+    try {
+      await $fetch('/api/bots/', {
+        method: 'POST',
+        body: e,
+      })
+      likedBots.value = [...likedBots.value, e]
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function handleDislike(e: Bot) {
     likedBots.value = likedBots.value.filter((bot) => bot.id !== e.id)
   }
 
-  const handleSendChat = useForm({validationSchema: toTypedSchema(sendChatSchema)})
-  .handleSubmit((values) => {
-    alert(JSON.stringify(values))
+  async function updateChatHistory(chatHistoryRequestBody: ChatHistoryRequestBody) {
+    return await $fetch<ChatHistory>('/api/chat/history', {
+      method: 'POST',
+      body: chatHistoryRequestBody
+    })
+  }
+
+  async function botReply({bot, history}: botChatSchema) {
+    return await $fetch<GenerateContentResult>('/api/chat/reply', {
+      method: 'POST',
+      body: {
+        bot,
+        history: history?.map(chat => ({
+          role: chat.role,
+          content: chat.content
+        }))
+      }
+    })
+  }
+
+  const { handleSubmit, resetForm } = useForm({validationSchema: toTypedSchema(sendChatSchema)})
+  const handleSendChat = handleSubmit(async ({ message }) => {
+    if (isSendingMessage.value) return
+    try {
+      isSendingMessage.value = true
+      if (!activeBotId.value) return
+      if (!activeBot.value) return
+      const newChat = await updateChatHistory({
+        role: 'user',
+        content: message,
+        botId: activeBotId.value
+      })
+      historyChats.value = [...historyChats.value, newChat]
+      resetForm()
+      const reply = await botReply({bot: activeBot.value, history: activeHistoryChats.value})
+
+      const candidates = reply.response.candidates
+      if (!candidates) return
+      const initContent = candidates[0].content
+
+      const newBotReply = await updateChatHistory({
+        botId: activeBotId.value, 
+        content: initContent.parts[0].text || '', 
+        role: initContent.role
+      })
+      historyChats.value = [...historyChats.value, newBotReply]
+
+
+    } catch(err) {
+      console.error(err)
+    } finally {
+      isSendingMessage.value = false
+    }
   })
+
+  async function handleFirstTimeChat(botId: string) {
+    if (allHistoryChats.value && Array.isArray(allHistoryChats.value)) {
+      const isBotChatted = historyChats.value.some(chat => chat.bot_id === botId)
+      if (!isBotChatted && !isBotLoading.value) {
+        try {
+          isBotLoading.value = true
+
+          if (!activeBot.value) return;
+
+          const reply = await botReply({ bot: activeBot.value })
+          const candidates = reply.response.candidates
+          if (!candidates) return
+          const initContent = candidates[0].content
+
+          const newChat = await updateChatHistory({
+            botId, 
+            content: initContent.parts[0].text || '', 
+            role: initContent.role
+          })
+          if (!newChat) return
+          historyChats.value = [...historyChats.value, newChat]
+        } catch (err) {
+          console.error(err);
+        } finally {
+          isBotLoading.value = false
+        }
+      }
+    }
+  }
 </script>
 
 <style scoped>
