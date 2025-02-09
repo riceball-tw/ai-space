@@ -71,7 +71,7 @@
         } satisfies SignUp
       })
       toast.success(signUpRes.message)
-      navigateTo('/chat')
+      await navigateTo('/chat')
     } catch(err) {
       alert(err)
       if (err instanceof Error) {
