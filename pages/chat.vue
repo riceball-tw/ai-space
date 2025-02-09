@@ -155,6 +155,18 @@
   const { data: relatedBotsData, status: relatedBotsStatus } = await useLazyFetch<Bots>('/api/bots')
   const { data: allHistoryChats } = useLazyFetch('/api/chat')
 
+  /**
+   *  For update first client side load
+   *  Fetch is lazy loaded, so watch and push to accumulated ref, only on first 
+   */
+  watch(relatedBotsData, () => {
+      likedBots.value = relatedBotsData.value || []
+  }, { once: true })
+
+  watch(allHistoryChats, () => {
+      historyChats.value = Array.isArray(allHistoryChats.value) ? allHistoryChats.value : []
+  }, { once: true })
+
   const historyChats = ref(Array.isArray(allHistoryChats.value) ? allHistoryChats.value : [])
   
   
