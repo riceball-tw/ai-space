@@ -120,7 +120,8 @@
               </FormItem>
             </FormField>
             <Button class="rounded-full">
-              <Send />
+              <Loader2 v-if="isSendingMessage" class="animate-spin" className="animate-spin" />
+              <Send v-else />
               <span class="sr-only">Send Message</span>
             </Button>
           </form>
@@ -146,7 +147,7 @@
   import { botChatSchema } from '@/utils/schemas/bot'
   import SwipeableCards from '@/components/chat/SwipeableCards.vue'
   import Chat from '@/components/chat/Chat.vue'
-  import { UserRoundPlus, Meh, Info, Send, ScanFace } from 'lucide-vue-next';
+  import { UserRoundPlus, Meh, Info, Send, ScanFace, Loader2 } from 'lucide-vue-next';
   import { sendChatSchema } from '@/utils/schemas/send-chat'
   import type { GenerateContentResult } from '@google/generative-ai'
 
