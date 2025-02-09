@@ -1,23 +1,30 @@
-# Nuxt Minimal Starter
+# AiSpace - Fullstack ai chat app
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+The project is for take-home assignment usage.
 
+- [Nuxt.js](https://nuxt.com/): Utilized for its robust ecosystem and built-in support for isomorphic rendering, simplifying both server-side and client-side development.
+- [Supabase](https://supabase.com/)(Postgres): I'm just learning it and see what's possible :) . For chat app usage, I think Firebase like document based NO SQL DB might be more suitable.
+- [Vue Shadcn](https://www.shadcn-vue.com/): For it's fast and flexible tailwind config & components.
+- [Swiper](https://swiperjs.com/): Easy and most widely used carousel library.
+- [Gemini AI](https://ai.google.dev/gemini-api/docs): Powerful chatbot that has generous free usage.
+- [Zod](https://zod.dev/): TypeScript-first schema validation for frontend form validation and backend data validation.
+
+## Requirement
+
+Build a Tinder like chat app include these feature:
+- Recommendation list for user to like
+- like and pass
+- Chat room
+  
 ## Setup
+
+1. Create `.env` base on `.env.example` file
+2. You can use `generate-db-type` in npm script to generate supabase typescript type
 
 Make sure to install dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
 ## Development Server
@@ -25,17 +32,7 @@ bun install
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
@@ -43,33 +40,11 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
 Locally preview production build:
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
 pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
