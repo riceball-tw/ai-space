@@ -25,6 +25,7 @@
               <Skeleton style="height: 264px" class="w-full" />
             </template>
           </Suspense>
+          <Button :variant="'destructive'" @click="handleLogout">Sign out</Button>
         </div>
       </div>
     </main>
@@ -33,8 +34,19 @@
 
 <script setup lang="ts">
   import UserInfo from '@/components/profile/UserInfo.vue'
+  import { toast } from 'vue-sonner'
   
   definePageMeta({
     layout: 'basic'
   })
+  
+  async function handleLogout() {
+    const supabase = useSupabaseClient()
+    const { error: signOutError } = await supabase.auth.signOut()
+    if (signOutError) {
+      toast.error(signOutError.message)
+    } 
+    toast.success('Sign out successfully')
+    await navigateTo('/')
+  }
 </script>
