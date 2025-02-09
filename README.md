@@ -9,6 +9,33 @@ The project is for take-home assignment usage.
 - [Gemini AI](https://ai.google.dev/gemini-api/docs): Powerful chatbot that has generous free usage.
 - [Zod](https://zod.dev/): TypeScript-first schema validation for frontend form validation and backend data validation.
 
+```mermaid
+erDiagram
+    chat_history {
+        uuid id PK
+        uuid user_id FK
+        varchar role
+        text content
+        timestamp created_at
+        uuid bot_id FK
+    }
+    bots {
+        uuid id PK
+        varchar name
+        jsonb image
+        text bio
+        timestamptz created_at
+        uuid user_id FK
+    }
+    users { 
+        uuid id PK
+    }
+
+    chat_history ||--o{ bots : bot_id
+    chat_history ||--o{ users : user_id
+    bots ||--o{ users : user_id
+```
+
 ## Requirement
 
 Build a Tinder like chat app include these feature:
