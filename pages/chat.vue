@@ -204,8 +204,18 @@
   /**
    * Remove target bot from like
    */
-  function handleDislike(targetBot: Bot) {
-    likedBots.value = likedBots.value.filter((bot) => bot.id !== targetBot.id)
+  async function handleDislike(targetBot: Bot) {
+    const isPersonLikedBefore = likedBots.value.some((bot) => bot.id === targetBot.id)
+    if (!isPersonLikedBefore) return
+    try {
+      await $fetch('/api/chat/', {
+        method: 'DELETE',
+        body: targetBot,
+      })
+      likedBots.value = likedBots.value.filter((bot) => bot.id !== targetBot.id)
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   /**
