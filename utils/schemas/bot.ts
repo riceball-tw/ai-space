@@ -17,3 +17,13 @@ export const botSchema = z.object({
   }),
   bio: z.string(),
 })
+
+export const botChatSchema = z.object({
+  bot: botSchema,
+  history: z.array(
+    z.object({
+      role: z.string(),
+      content: z.string()
+    })
+  ).optional()
+})
