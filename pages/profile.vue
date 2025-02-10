@@ -45,6 +45,7 @@
     const { error: signOutError } = await supabase.auth.signOut()
     if (signOutError) {
       toast.error(signOutError.message)
+      return
     } 
     toast.success('Sign out successfully')
     await navigateTo('/')
